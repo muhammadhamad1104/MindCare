@@ -1,21 +1,25 @@
-
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import Layout from '../../components/layout/Layout';
 import LoginForm from '../../components/auth/LoginForm';
 import loginBg from '../../assets/images/backgrounds/login-bg.webp';
-import { useAuth } from '../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import Loading from '../../components/common/Loading';
 
 const Login = () => {
-  const { isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
+    if (user) {
+      const redirectPath = user.role === USER_ROLES.ADMIN ? '/admin' : '/portal';
+      navigate(redirectPath, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [user, navigate]);
+
+  if (loading) {
+    return <Loading fullScreen />;
+  }
 
   return (
     <Layout noHeader noFooter>

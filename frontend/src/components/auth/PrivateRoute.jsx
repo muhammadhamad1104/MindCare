@@ -2,23 +2,21 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Loading from '../common/Loading';
+import { USER_ROLES } from '../../utils/constants';
 
-const PrivateRoute = ({ children, roles = [] }) => {
-  const { user, isAuthenticated, loading } = useAuth();
+const PrivateRoute = ({ children, allowedRoles = [] }) => {
+  const { user, loading } = useAuth();
   const location = useLocation();
   
   if (loading) {
     return <Loading fullScreen />;
   }
   
-  if (!isAuthenticated) {
-    // Redirect to login page, saving the current location
+  if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
-  // Check if user has required role
-  if (roles.length > 0 && !roles.includes(user.role)) {
-    // Redirect to unauthorized page or home
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
   
